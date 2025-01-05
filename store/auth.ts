@@ -28,10 +28,24 @@ const setCookie = (name: string, value: string) => {
   document.cookie = `${name}=${value}; path=/`;
 };
 
+const getInitialState = () => {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('token');
+    return {
+      token,
+      isAuthenticated: !!token,
+      user: null,
+    };
+  }
+  return {
+    token: null,
+    isAuthenticated: false,
+    user: null,
+  };
+};
+
 export const useAuthStore = create<AuthState>((set) => ({
-  token: null,
-  user: null,
-  isAuthenticated: false,
+  ...getInitialState(),
 
   login: async (email: string, password: string) => {
     const response = await fetch(`${config.apiBaseUrl}${config.endpoints.auth.login}`, {
@@ -72,7 +86,6 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   register: async (email: string, password: string, username: string) => {
-    console.log('Starting registration...');
     try {
       const response = await fetch(`${config.apiBaseUrl}${config.endpoints.auth.register}`, {
         method: 'POST',
@@ -88,8 +101,6 @@ export const useAuthStore = create<AuthState>((set) => ({
         })
       });
 
-      console.log('Registration response status:', response.status);
-      
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Failed to parse error response' }));
         console.error('Registration error:', errorData);
@@ -97,7 +108,6 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
 
       const data = await response.json();
-      console.log('Registration response:', data);
 
       const { token } = data;
 

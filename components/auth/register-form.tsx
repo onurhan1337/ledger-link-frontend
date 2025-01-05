@@ -47,16 +47,13 @@ export function RegisterForm() {
 
   async function onSubmit(values: z.infer<typeof registerSchema>) {
     try {
-      console.log('Form submitted with values:', values);
       setIsLoading(true);
       
-      console.log('Calling register function...');
       await register(
         values.email,
         values.password,
         values.username
       );
-      console.log('Register function completed');
       
       toast({
         title: "Account created",

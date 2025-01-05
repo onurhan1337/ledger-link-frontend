@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, useContext } from 'react';
 import { useAuthStore } from '@/store/auth';
 
 interface AuthContextType {
@@ -24,16 +24,6 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { token, isAuthenticated, login, register, logout } = useAuthStore();
 
-  console.log('AuthProvider mounted');
-
-  useEffect(() => {
-    console.log('AuthProvider effect running');
-    const storedToken = localStorage.getItem('token');
-    if (storedToken) {
-      useAuthStore.setState({ token: storedToken, isAuthenticated: true });
-    }
-  }, []);
-
   const value = {
     isAuthenticated,
     token,
@@ -42,9 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     logout,
     refreshToken: async () => {},
   };
-
-  console.log('AuthProvider value:', value);
-
+  
   return (
     <AuthContext.Provider value={value}>
       {children}
